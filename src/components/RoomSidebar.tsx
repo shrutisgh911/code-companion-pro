@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { getMockUsers } from "@/lib/mock-api";
-import { Hash, Users, Copy, Check } from "lucide-react";
+import { Hash, Users, Copy, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface Notification {
@@ -8,7 +8,11 @@ interface Notification {
   text: string;
 }
 
-export default function RoomSidebar() {
+interface RoomSidebarProps {
+  onClose?: () => void;
+}
+
+export default function RoomSidebar({ onClose }: RoomSidebarProps) {
   const { id } = useParams();
   const users = getMockUsers();
   const [copied, setCopied] = useState(false);
@@ -20,7 +24,6 @@ export default function RoomSidebar() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Mock join/leave notifications
   useEffect(() => {
     const timeout = setTimeout(() => {
       setNotifications([{ id: "1", text: "Alice joined the room" }]);
@@ -29,9 +32,16 @@ export default function RoomSidebar() {
   }, []);
 
   return (
-    <aside className="w-56 bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 overflow-hidden">
+    <aside className="w-56 h-full bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 overflow-hidden">
+      <div className="p-3 border-b border-sidebar-border flex items-center justify-between">
+        <div className="text-xs text-muted-foreground uppercase tracking-wider">Room</div>
+        {onClose && (
+          <button onClick={onClose} className="lg:hidden p-0.5 text-muted-foreground hover:text-foreground transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
       <div className="p-3 border-b border-sidebar-border">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Room</div>
         <button onClick={copyRoomId} className="flex items-center gap-2 w-full bg-sidebar-accent rounded-md px-2.5 py-1.5 hover:bg-muted transition-colors group">
           <Hash className="h-3.5 w-3.5 text-primary" />
           <span className="text-sm text-foreground truncate flex-1 text-left font-mono">{id || "default"}</span>
